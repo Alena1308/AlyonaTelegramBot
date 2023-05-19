@@ -47,7 +47,9 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     @Override
     public int process(List<Update> updates) {
         try{
-            updates.forEach(update -> {
+            updates.stream()
+                    .filter(update -> update.message()!=null)
+                    .forEach(update -> {
                 logger.info("Handles update: {}", update);
                 Message message = update.message();
                 Long chatId = message.chat().id();
@@ -69,6 +71,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                           notificationTask.setMessage(txt);
                           notificationTask.setNotificationDateTime(dateTime);
                           notificationTaskService.save(notificationTask);
+                          sendMessage(chatId, "Задача запланирована!");
                       }
                     }else {
                         sendMessage(chatId, "Некорректный формат сообщения!");
